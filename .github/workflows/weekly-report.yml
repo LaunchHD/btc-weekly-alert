@@ -1,0 +1,30 @@
+name: BTC Weekly SMA/RSI Report
+
+on:
+  schedule:
+    # Binance weekly candles close Monday 00:00 UTC.
+    # Run at 00:15 UTC Monday to give the candle a few minutes to finalize.
+    - cron: "15 0 * * 1"
+  workflow_dispatch: {} # lets you manually trigger a run from the Actions tab to test
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run weekly report
+        env:
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: node index.js
